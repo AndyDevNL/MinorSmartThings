@@ -1,0 +1,70 @@
+import sys
+import time
+import Adafruit_DHT as dht
+import firebase
+import json
+
+#define DHTsensor
+sensor = dht.DHT22
+dhtPin = 4
+
+#define Student
+firstname = 'Andreas'
+lastname = 'Sharoubim'
+studnum = '0876986'
+adress = 'hooidrift 123b2'
+website = '-'
+
+#define metadata
+lng = 4.4792
+lat = 51.9225
+date = "today"
+currenttime = "right now"
+
+#define database
+dbHost = 'https://smart-things-2019.firebaseio.com'
+
+#define sensors 
+hum, temp = dht.read_retry(sensor, dhtPin)
+wind = 'no windspeed yet'
+density = 'no density yet'
+denstype = 'Density'
+
+#initialize database connection
+firebase= firebase.FirebaseApplication(dbHost)
+
+def update_firebase():
+  hum, temp = dht.read_retry(sensor, dhtPin)
+  
+  if hum is not None and temp is not None:
+    time.sleep(5)
+    str_temp = ' {0:0.2f} *C '.format(temp) 
+    str_hum  = ' {0:0.2f} %'.format(hum)
+    print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temp, hum))
+  else:
+    print('failed to get reading')
+    time.sleep(60)
+    
+  #set student data 
+  firebase.put('/0876986-stream-data/student-data', "first-name", firstname)
+  firebase.put('/0876986-stream-data/student-data', "last-name", lastname)
+  firebase.put('/0876986-stream-data/student-data', "student-number", studnum)
+  firebase.put('/0876986-stream-data/student-data', "adress", adress)
+  firebase.put('/0876986-stream-data/student-data', "website", website)
+  
+  #set sensor data      
+  firebase.put('/0876986-stream-data/sensor-data', "humidity", hum )
+  firebase.put('/0876986-stream-data/sensor-data', "temperature", temp)
+  firebase.put('/0876986-stream-data/sensor-data', "windspeed", wind)
+  firebase.put('/0876986-stream-data/sensor-data/unique-sensor', "sensor-type", denstype)
+  firebase.put('/0876986-stream-data/sensor-data/unique-sensor', "sensor-value", density) 
+  
+  #set meta data
+  firebase.put('/0876986-stream-data/meta-data', "longitude", lng)
+  firebase.put('/0876986-stream-data/meta-data', "latitude", lat)
+  firebase.put('/0876986-stream-data/meta-data', "date", date)
+  firebase.put('/0876986-stream-data/meta-data', "time", currenttime)
+  
+while True:
+  update_firebase()
+  time.sleep(1)
