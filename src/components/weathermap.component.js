@@ -4,7 +4,7 @@ import axios from 'axios';
 import * as firebase from 'firebase';
 import firestore from './firebaseConfig';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
-
+import './weathermap.scss';
 
 export default class Homestations extends Component {
     constructor(props) {
@@ -49,7 +49,7 @@ export default class Homestations extends Component {
     }
 
     RenderMap() {
-      const Weathermap = withScriptjs(withGoogleMap((props) =>
+        const Weathermap = withScriptjs(withGoogleMap((props) =>
         <GoogleMap defaultZoom={8}
                    ref={props.onMapLoad}
                    defaultCenter={{lat:52.086071 , lng: 4.883930}}
@@ -57,15 +57,15 @@ export default class Homestations extends Component {
           {
             this.state.data.map(marker => {
                 if(marker['meta-data']) {
-                  return (
-                      <Marker position={{ lat: marker['meta-data']['latitude'], lng: marker['meta-data']['longitude']}} />
-                  )
+                    return (
+                      <Marker onClick={this.onMarkerClick.bind(this,marker)} position={{ lat: marker['meta-data']['latitude'], lng: marker['meta-data']['longitude']}} />
+                  );
                 }
               }
             )
           }
         </GoogleMap>
-      ))
+      ));
 
       return (
           <Weathermap
@@ -78,6 +78,14 @@ export default class Homestations extends Component {
           </Weathermap>
         )
     }
+
+    onMarkerClick = (marker) => {
+        return (
+            <div className="marker-popup">
+                <h1>{marker['student-data']['student-number']}</h1>
+            </div>
+            )
+    };
               // <td>
               //   <a href={student['student-data']['website']} > {student['student-data']['website']} </a>
               // </td>                                                                          
