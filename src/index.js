@@ -5,7 +5,6 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import * as firebase from 'firebase';
-import config from './config';
 
 
 ReactDOM.render(<App />, document.getElementById('root'));

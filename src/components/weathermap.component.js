@@ -6,12 +6,13 @@ import firestore from './firebaseConfig';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps";
 import './weathermap.scss';
 
+var element;
+
 export default class Homestations extends Component {
     constructor(props) {
         super(props);
         this.state = {data: []};
     }
-
 
     componentDidMount() {
       let weathermapState = this;
@@ -58,7 +59,18 @@ export default class Homestations extends Component {
             this.state.data.map(marker => {
                 if(marker['meta-data']) {
                     return (
-                      <Marker onClick={this.onMarkerClick.bind(this,marker)} position={{ lat: marker['meta-data']['latitude'], lng: marker['meta-data']['longitude']}} />
+                      <Marker onClick={this.onMarkerClick.bind(this, marker)} position={{ lat: marker['meta-data']['latitude'], lng: marker['meta-data']['longitude']}}>
+                      <div className={'marker hidden'} id={'marker-' + marker['student-data']['student-number']}>
+                           <h1> {marker['student-data']['student-number']} </h1>
+                            <ul>
+                                <li>Temperature: {marker['sensor-data']['temperature']}</li>
+                                <li>Humidity: {marker['sensor-data']['humidity']}</li>
+                            </ul>
+                        </div>
+                          {/*<div onClick={this.closePopup().bind(this, marker)}>*/}
+                              {/*x*/}
+                          {/*</div>*/}
+                      </Marker>
                   );
                 }
               }
@@ -80,11 +92,15 @@ export default class Homestations extends Component {
     }
 
     onMarkerClick = (marker) => {
-        return (
-            <div className="marker-popup">
-                <h1>{marker['student-data']['student-number']}</h1>
-            </div>
-            )
+        if (element == null) {
+            element = document.getElementById('marker-' + marker['student-data']['student-number']);
+            element.classList.remove("hidden");
+        } else {
+            element.classList.add("hidden");
+            element = document.getElementById('marker-' + marker['student-data']['student-number']);
+            element.classList.remove("hidden");
+        }
+
     };
               // <td>
               //   <a href={student['student-data']['website']} > {student['student-data']['website']} </a>
